@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 
 # ignore the erikoistyo-directory
-erikoityo
+erikoistyo/
