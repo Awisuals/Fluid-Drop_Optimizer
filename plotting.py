@@ -29,12 +29,12 @@ def Plotting(xy_scale, z_scale, plot_num, plot_points, view_param, close=False):
     # [x_points, y_points, z_points]
     if plot_num == 1: ax.scatter(plot_points[0], 
                                  plot_points[1], 
-                                 plot_points[2])
+                                 plot_points[2]) # , antialiasing=True
 
     ax.view_init(elev=view_param[0], azim=view_param[1]) # 45, 0
     ax.dist = view_param[2] # 8
-    ax.set_xlim([fig_minlim_xy, fig_maxlim_xy])
-    ax.set_ylim([fig_minlim_xy, fig_maxlim_xy])
+    # ax.set_xlim([fig_minlim_xy, fig_maxlim_xy])
+    # ax.set_ylim([fig_minlim_xy, fig_maxlim_xy])
     ax.set_zlim([fig_minlim_z, fig_maxlim_z])
     ax.set_xlabel('x')
     ax.set_ylabel('y')

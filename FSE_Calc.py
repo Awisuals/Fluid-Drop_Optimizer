@@ -19,14 +19,15 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from scipy import spatial as sp_spatial
 import mpl_toolkits.mplot3d as a3
+from scipy.optimize import basinhopping
+from scipy.optimize import minimize_scalar
 
-# Import point cloud
+
+# Import point clouds.
 # Point cloud represents water droplet on a table.
 # Points generated in Ellipsoid_Mesh_Kart - script.
 # 2-D array with x,y,z coordinates for each point
-h0_1 = np.load('meshgrid_h020.npy')
-
-# Import more data to test
+# With different grid sizes.
 h0_data = [np.load('meshgrid_h010.npy')
 ,np.load('meshgrid_h020.npy')
 ,np.load('meshgrid_h030.npy')
@@ -130,11 +131,80 @@ h0_data = [np.load('meshgrid_h010.npy')
 # ]
 
 
+# Some tplotting funktions
+def test0(h0_1):
+    ax = plt.figure().add_subplot(projection='3d')
+    ax.scatter(h0_1[:,0],
+               h0_1[:,1],
+               h0_1[:,2])
+    ax.set_zlim([0, 0.0025])
+    plt.show()
+
+
+def test1(h0_1):
+    ax = plt.figure().add_subplot(projection='3d')
+    ax.plot_trisurf(h0_1[:,0],
+                    h0_1[:,1],
+                    h0_1[:,2],linewidth=0.2,antialiased=True)
+    ax.set_zlim([0, 0.0025])
+    plt.show()
+
+
+# test1(h0_1)
+
+
+def test2(h0_1_faces):
+    ax1 = plt.figure().add_subplot(projection='3d')
+    i=0
+    while i<len(h0_1_faces):
+        ax1.plot_trisurf(h0_1_faces[i,:,0],
+                         h0_1_faces[i,:,1],
+                         h0_1_faces[i,:,2],linewidth=0.2,antialiased=True)
+        i+=1
+    # ax1.set_zlim([0, 0.0025])
+    plt.show()
+
+
+def test3(h0_1_faces):    
+    # axis limits from view 
+    # fig_minlim_xy, fig_maxlim_xy = 0.3, 0.54
+    # fig_minlim_z, fig_maxlim_z = 0, 1.4
+    
+    fig_minlim_xy, fig_maxlim_xy = -1, 1
+    fig_minlim_z, fig_maxlim_z = 0, 1.4
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    # ax.scatter(x_mod, y_mod, z_mod)
+    
+    ax.view_init(elev=45, azim=0)
+    ax.dist = 8
+    ax.set_xlim([fig_minlim_xy, fig_maxlim_xy])
+    ax.set_ylim([fig_minlim_xy, fig_maxlim_xy])
+    ax.set_zlim([fig_minlim_z, fig_maxlim_z])
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    
+    for f in h0_1_faces:
+        face = a3.art3d.Poly3DCollection([f])
+        # face.set_color(mpl.colors.rgb2hex(sp.rand(3)))
+        face.set_color(mpl.colors.hex2color('#787ecc'))
+        face.set_edgecolor('k') 
+        face.set_alpha(0.5) # transparency of faces
+        ax.add_collection3d(face)
+    
+    # figManager = plt.get_current_fig_manager()
+    # figManager.window.showMaximized()
+    plt.show()
+    plt.tight_layout()
+
+
 # Global variables (Bad)
-Gamma_LG = 1 # 0.076
-Gamma_SG = 0.5 # Gamma_LG*np.cos(0.3875)
-Rho_W = 1 # 997
-g = 1 # 9.81
+Gamma_LG = 0.076
+Gamma_SG = Gamma_LG*np.cos(0.3875)
+Rho_W = 997
+g = 9.81
 
 
 def Triangulate_Data(data):
@@ -259,7 +329,7 @@ def Simplex_FE(sp, xy):
     return Simplex_ST(sp)*Simplex_Area(sp)+Simplex_GE(sp, xy)
 
 
-def System_Free_Energy(h0, h0_faces):
+def System_Free_Energy(h0z, GRID_SIZE):
     """
     Calculate whole system free energy by summing
     the free energies of the simplices.
@@ -277,15 +347,57 @@ def System_Free_Energy(h0, h0_faces):
         System free energy.
 
     """
+    # Check right format of input data. Must be 3-dim.
+    # try:
+    #     len(h0[0])
+    # except:
+    #     h0 = np.reshape(h0, (int(len(h0)/3), 3))    
+        
+    h0 = Compose_h0(h0z, GRID_SIZE)
+    h0_simplices = Triangulate_Data(h0)
     Delta_XY = [abs(h0[0,0] - h0[1,0]), abs(h0[0,0] - h0[1,0])]
     fe = 0
     i=0
-    while i<len(h0_faces):
-        fe+=Simplex_FE(h0_faces[i,:,:], Delta_XY)
+    while i<len(h0_simplices):
+        fe+=Simplex_FE(h0_simplices[i,:,:], Delta_XY)
         # Calculates Simplex volyme, seems to work
         # print(Simplex_Volyme(h0_faces[i,:,:], Delta_XY))
         i+=1
     return fe
+
+
+def Compose_h0(h0z, GRID_SIZE):
+    h0xy = np.load(f'FDmeshgrid_h0{GRID_SIZE}.npy')[:,:2]
+    tmp=[]
+    tmp.append(h0xy[:,0])
+    tmp.append(h0xy[:,1])
+    tmp.append(h0z)
+    h0 = np.asarray(tmp).T
+    return h0
+
+
+def System_Volyme(h0z, GRID_SIZE):
+    
+    # try:
+    #     len(h0[0])
+    # except:
+    #     h0 = np.reshape(h0, (int(len(h0)/3), 3))    
+    
+    h0 = Compose_h0(h0z, GRID_SIZE)
+    h0_simplices = Triangulate_Data(h0)
+    Delta_XY = [abs(h0[0,0] - h0[1,0]), abs(h0[0,0] - h0[1,0])]
+    v = 0
+    i=0
+    while i<len(h0_simplices):
+        v+=Simplex_Volyme(h0_simplices[i,:,:], Delta_XY)
+        # Calculates Simplex volyme, seems to work
+        # print(Simplex_Volyme(h0_faces[i,:,:], Delta_XY))
+        i+=1
+    return v
+
+
+def Volyme_constrt(h0):
+    return System_Volyme(h0)-0.6575252027812426 # Need to calculate for different cases
 
 
 def F_calc_test(h0_data):
@@ -306,68 +418,78 @@ def F_calc_test(h0_data):
     plt.show()
 
 
-F_calc_test(h0_data)
-# print(System_Free_Energy(h0_1, h0_1_faces))
+def Optimization_basinhopping(h0, GRID_SIZE):
+    
+    # bounds=[-1.,1.] , "bounds":bounds
+    cons = ({'type': 'eq', 'fun': lambda h0: System_Volyme(h0, GRID_SIZE)-2.64454809049215e-10})
+    minimizer_kwargs = {"method":"trust-constr", "constraints":cons, 'args':GRID_SIZE} # , "jac":True
+    h0_opt = basinhopping(System_Free_Energy, h0, 
+                       minimizer_kwargs=minimizer_kwargs, 
+                       niter=20, 
+                       T=0.1,
+                       stepsize=0.00025,
+                       niter_success=2,
+                       interval=1,
+                       disp=True,
+                       target_accept_rate=0.5,
+                       stepwise_factor=0.5
+                       ) # , niter=200
+    return h0_opt
 
 
-#%% Some test by plotting
+GRID_SIZE=20
+h0_1z = np.load(f'FD_NO-REST_meshgrid_h0{GRID_SIZE}.npy')[:,2]
+h0_2z = np.load(f'FDmeshgrid_h0{GRID_SIZE}.npy')[:,2]
+print(f"Grid size: {int(GRID_SIZE)} x {int(GRID_SIZE)}")
+h0_1 = Compose_h0(h0_1z, GRID_SIZE)
 
-# Import
-h0_1 = np.load('meshgrid_h020.npy')
-# Triangulate
-h0_1_simplices = Triangulate_Data(h0_1)
-
-def test1(h0_1):
-    ax = plt.figure().add_subplot(projection='3d')
-    ax.plot_trisurf(h0_1[:,0],
-                    h0_1[:,1],
-                    h0_1[:,2],linewidth=0.2,antialiased=True)
-    plt.show()
 # test1(h0_1)
 
+# Test Volyme calculation
+print("System volyme:      " + str(System_Volyme(h0_1z, GRID_SIZE)))
+# Test Free energy calculation
+print("System free energy: " + str(System_Free_Energy(h0_1z, GRID_SIZE)))
 
-def test2(h0_1_faces):
-    ax1 = plt.figure().add_subplot(projection='3d')
-    i=0
-    while i<len(h0_1_faces):
-        ax1.plot_trisurf(h0_1_faces[i,:,0],
-                         h0_1_faces[i,:,1],
-                         h0_1_faces[i,:,2],linewidth=0.2,antialiased=True)
-        i+=1
-    plt.show()
+h0_opt=Optimization_basinhopping(h0_1z, GRID_SIZE)
+h0_opt_z=h0_opt.x
+
+print("Optimized System volyme:      " + str(System_Volyme(h0_opt_z, GRID_SIZE)))
+print("Optimized System free energy: " + str(System_Free_Energy(h0_opt_z, GRID_SIZE)))
+
+h0_opt_plot = Compose_h0(h0_opt_z, GRID_SIZE)
+
+test0(h0_opt_plot)
+test1(h0_opt_plot)
+
+#%%
+
+volyme=[]
+free_energy=[]
+
+i=10
+while i<101:
+    SIZE=i
+    h0_1 = np.load(f'meshgrid_h0{SIZE}.npy')
+    # h0_1_opt = Optimization(h0_1)
+    # test1(h0_1_opt)
+    
+    # Test Volyme calculation
+    # Import
+    GRID=np.sqrt(len(h0_1))
+    print(f"Grid size: {GRID} x {GRID}")
+    print("System volyme:      " + str(System_Volyme(h0_1)))
+    
+    # Test Free energy calculation
+    # F_calc_test(h0_data)
+    print("System free energy: " + str(System_Free_Energy(h0_1)))
+    
+    volyme.append(System_Volyme(h0_1))
+    free_energy.append(System_Free_Energy(h0_1))
+    i+=10
 
 
-def test3(h0_1_faces):    
-    # axis limits from view 
-    # fig_minlim_xy, fig_maxlim_xy = 0.3, 0.54
-    # fig_minlim_z, fig_maxlim_z = 0, 1.4
-    
-    fig_minlim_xy, fig_maxlim_xy = -1, 1
-    fig_minlim_z, fig_maxlim_z = 0, 1.4
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    # ax.scatter(x_mod, y_mod, z_mod)
-    
-    ax.view_init(elev=45, azim=0)
-    ax.dist = 8
-    ax.set_xlim([fig_minlim_xy, fig_maxlim_xy])
-    ax.set_ylim([fig_minlim_xy, fig_maxlim_xy])
-    ax.set_zlim([fig_minlim_z, fig_maxlim_z])
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('z')
-    
-    for f in h0_1_faces:
-        face = a3.art3d.Poly3DCollection([f])
-        # face.set_color(mpl.colors.rgb2hex(sp.rand(3)))
-        face.set_color(mpl.colors.hex2color('#787ecc'))
-        face.set_edgecolor('k') 
-        face.set_alpha(0.5) # transparency of faces
-        ax.add_collection3d(face)
-    
-    # figManager = plt.get_current_fig_manager()
-    # figManager.window.showMaximized()
-    plt.show()
-    plt.tight_layout()
-
+xes = np.linspace(10, i, num=int(np.sqrt(i)))
+plt.scatter(xes, free_energy)
+plt.scatter(xes, volyme)
+plt.title("Free energy and volyme as a function of grid size")
+plt.show()

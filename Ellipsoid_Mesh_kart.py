@@ -17,7 +17,8 @@ from surfature import Surface_Curvature
 from scipy.spatial import Delaunay
 
 def ellipsoid_z(X, Y, a, b, c):
-    z = np.sqrt(c**2*(1-(X**2/a**2)-(Y**2/b**2)))-0.5
+    # z = np.sqrt(c**2*(1-(X**2/a**2)-(Y**2/b**2)))# -0.5
+    z = c+b*np.sqrt(1-a*(X**2+Y**2))
     for idr, row in enumerate(z):
         for idc, column in enumerate(row):
             if m.isnan(column):
@@ -70,12 +71,15 @@ def remove_plane_points(X, Y, Z, height):
 def generate_grids(max_grid_size):
     i=10
     while i<max_grid_size:
+        GRID_SCALE=0.005
         N = i
         plane_params = [0, 0, 2, 1]
-        x = np.linspace(-1,1,N)
-        y = np.linspace(-1,1,N)
+        x = np.linspace(-GRID_SCALE,GRID_SCALE,N)
+        y = np.linspace(-GRID_SCALE,GRID_SCALE,N)
         [x, y] = np.meshgrid(x,y, sparse=False)
-        z_ellipsoid = ellipsoid_z(x, y, 1,1,1) #0.75, 0.75, 0.8)
+        z_ellipsoid = ellipsoid_z(x, y, 5.846411733602286e+04, 
+                                  0.000000290055701e+04, 
+                                  -0.000000250719341e+04) #0.75, 0.75, 0.8)
         z_plane = plane_z(x, y, plane_params[0], plane_params[1], 
                   plane_params[2], plane_params[3])
         def Cut_Ellipsoid_With_Plane():    
@@ -90,18 +94,20 @@ def generate_grids(max_grid_size):
         z_points = np.reshape(z_ellipsoid, -1)
         ellipsoid_points = np.stack((x_points, y_points, z_points), 1)
         
-        np.save('meshgrid_h0'+str(i), ellipsoid_points)
+        np.save('FDmeshgrid_h0'+str(i), ellipsoid_points)
         i+=10
     
 # generate_grids(1001)
 
-    
-N = 1000
+GRID_SCALE=0.0025
+N = 20
 plane_params = [0, 0, 2, 1]
-x = np.linspace(-1,1,N)
-y = np.linspace(-1,1,N)
+x = np.linspace(-GRID_SCALE,GRID_SCALE,N)
+y = np.linspace(-GRID_SCALE,GRID_SCALE,N)
 [x, y] = np.meshgrid(x,y, sparse=False)
-z_ellipsoid = ellipsoid_z(x, y, 1,1,1) #0.75, 0.75, 0.8)
+z_ellipsoid = ellipsoid_z(x, y, 5.846411733602286e+05, # 5.846411733602286e+04 
+                          0.000000290055701e+04, 
+                          -0.000000250719341e+04) #0.75, 0.75, 0.8)
 z_plane = plane_z(x, y, plane_params[0], plane_params[1], 
           plane_params[2], plane_params[3])
 def Cut_Ellipsoid_With_Plane():    
@@ -115,8 +121,10 @@ x_points = np.reshape(x, -1)
 y_points = np.reshape(y, -1)
 z_points = np.reshape(z_ellipsoid, -1)
 ellipsoid_points = np.stack((x_points, y_points, z_points), 1)
-    
-Plotting([-1,1], [-1,1], 0, 
+
+# np.save('FD_NO-REST_meshgrid_h0'+str(N), ellipsoid_points)
+
+Plotting([-1,1], [0,0.0025], 0, 
           [x,y,z_ellipsoid], [45,0,8], close=False)
 
 
