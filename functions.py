@@ -109,7 +109,7 @@ def Simplex_ST(sp):
     """
     Gamma_LG = 0.076
     Gamma_SG = Gamma_LG*np.cos(0.3875)
-    if (sp[0, 2] or sp[1, 2] or sp[2, 2]) > 0.00007:
+    if (sp[0, 2] or sp[1, 2] or sp[2, 2]) > 0.000005:
         return Gamma_LG
     else:
         return Gamma_SG
