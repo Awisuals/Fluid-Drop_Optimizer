@@ -19,7 +19,7 @@ from functions import *
 
 def ellipsoid_z(X, Y, a, b, c):
     # z = np.sqrt(c**2*(1-(X**2/a**2)-(Y**2/b**2)))# -0.5
-    z = (c+b*np.sqrt(1-a*(X**2+Y**2)))# *2.5657562917683223
+    z = (c+b*np.sqrt(1-a*(X**2+Y**2)))*2.5657562917683223
     for idr, row in enumerate(z):
         for idc, column in enumerate(row):
             if m.isnan(column):
@@ -106,7 +106,7 @@ plane_params = [0, 0, 2, 1]
 x = np.linspace(-GRID_SCALE,GRID_SCALE,N)
 y = np.linspace(-GRID_SCALE,GRID_SCALE,N)
 [x, y] = np.meshgrid(x,y, sparse=False)
-z_ellipsoid = ellipsoid_z(x, y, 5.846411733602286e+04, # 1.5e+05 5.846411733602286e+04 
+z_ellipsoid = ellipsoid_z(x, y, 1.5e+05, # 1.5e+05 5.846411733602286e+04 
                           0.000000290055701e+04, 
                           -0.000000250719341e+04) #0.75, 0.75, 0.8)
 z_plane = plane_z(x, y, plane_params[0], plane_params[1], 
@@ -130,7 +130,7 @@ ellipsoid_points = np.stack((x_points, y_points, z_points), 1)
 print("System volyme:      " + str(System_Volyme(z_points, N)))
 
 Plotting([-1,1], [0,0.0025], 0, 
-          [x,y,z_ellipsoid], [45,0,8], close=False)
+          [x,y,z_ellipsoid], [45,0,8], close=True)
 
 
 # =============================================================

@@ -20,6 +20,7 @@ from scipy.optimize import basinhopping
 from scipy.optimize import minimize_scalar
 from plotting import *
 from functions import *
+import time
 
 # Import point clouds.
 # Point cloud represents water droplet on a table.
@@ -94,21 +95,18 @@ class MyStepFunction:
         return x
 
 
-# Lisää tilaa reunoille
-# tiheämpi grid
-# Alkutilan tilavuusyhteensopivuus
-# Muita minimointi metodeja
-def Optimization_basinhopping(h0, GRID_SIZE):
+def Optimization_basinhopping(h0, GRID_SIZE, volume_constrt, N):
     
+    contact_line = Morf_Contactline(h0, GRID_SIZE, N)
     h0_boundary = Compose_h0(h0, GRID_SIZE)
     boundary_uniq = Find_Grid_Boundary(h0_boundary)
     h0z_over0_indices = find_indices_greater_than_zero(h0)
-    
     bounds=[(0,1)]
-    cons = ({'type': 'eq', 'fun': lambda h0: System_Volyme(h0, GRID_SIZE)-2.6829739468141043e-09},
+    cons = ({'type': 'eq', 'fun': lambda h0: System_Volyme(h0, GRID_SIZE)-volume_constrt},
             {'type': 'eq', 'fun': lambda h0: h0[boundary_uniq]},
-            {'type': 'ineq', 'fun': lambda h0: h0[h0z_over0_indices] - 0.00015})
-    minimizer_kwargs = {"method":"SLSQP", # SLSQP trust-constr 
+            {'type': 'ineq', 'fun': lambda h0: h0[h0z_over0_indices] - 0.0002},
+            {'type': 'eq', 'fun': lambda h0: h0[contact_line]})
+    minimizer_kwargs = {"method":"trust-constr", # SLSQP trust-constr 
                         "constraints":cons, 
                         "args":GRID_SIZE, 
                         "bounds":bounds
@@ -123,39 +121,100 @@ def Optimization_basinhopping(h0, GRID_SIZE):
                        disp=True,
                        target_accept_rate=0.2,
                        stepwise_factor=0.9,
-                       take_step = MyStepFunction()
-                       )
+                       take_step = MyStepFunction())
     return h0_opt
 
 
+<<<<<<< HEAD
 GRID_SIZE=10
+=======
+def Optimize(N, M=0):
+    
+    GRID_SIZE=N
+    h0_1z = np.load(f'FD_NO-REST_meshgrid_h0{GRID_SIZE}.npy')[:,2]
+    h0_2z = np.load(f'FD_REST_meshgrid_h0{GRID_SIZE}.npy')[:,2]
+    print(f"Grid size: {int(GRID_SIZE)} x {int(GRID_SIZE)}")
+    h0_1 = Compose_h0(h0_1z, GRID_SIZE)
+    h0_2 = Compose_h0(h0_2z, GRID_SIZE)
+    
+    Rest_System_volyme = System_Volyme(h0_2z, GRID_SIZE)
+    Rest_System_free_energy = System_Free_Energy(h0_2z, GRID_SIZE)
+    
+    NonRest_System_volyme = System_Volyme(h0_1z, GRID_SIZE)
+    NonRest_System_free_energy = System_Free_Energy(h0_1z, GRID_SIZE)
+    
+    # Test Volyme calculation
+    print("Rest System volyme:      " + str(Rest_System_volyme))
+    # Test Free energy calculation
+    print("Rest System free energy: " + str(Rest_System_free_energy))
+    
+    # Test Volyme calculation
+    print("Non-Rest System volyme:      " + str(NonRest_System_volyme))
+    # Test Free energy calculation
+    print("Non-Rest System free energy: " + str(NonRest_System_free_energy))
+    
+    start = time.time()
+    h0_opt=Optimization_basinhopping(h0_1z, GRID_SIZE, NonRest_System_volyme, M)
+    h0_opt_z=h0_opt.x
+    end = time.time()
+    runtime = end - start
+    print(f"Elapsed optimization time: {runtime}")
+    
+    print("Optimized System volyme:      " + str(System_Volyme(h0_opt_z, GRID_SIZE)))
+    print("Optimized System free energy: " + str(System_Free_Energy(h0_opt_z, GRID_SIZE)))
+    
+    h0_opt_plot = Compose_h0(h0_opt_z, GRID_SIZE)
+    
+    # test0(h0_opt_plot)
+    test1(h0_opt_plot)
+    
+    test1(h0_1) # given h0
+    test1(h0_2) # rest form of h0
+    
+    return h0_opt_plot, runtime
+
+Optimize(10, 2)
+
+def Morf_Contactline(h0, gs, N):
+    
+    nonzero_indices = np.nonzero(h0)[0]
+    add_index = nonzero_indices[0]
+    contact_line = [add_index]
+    
+    i=0
+    while i<N:
+        add_index += gs
+        contact_line.append(add_index)
+        i += 1
+    return contact_line
+
+# Grid_Sizes = [10,11,12,13,14,15,16,17,18,19,20]# ,21,22,23,24,25,26,27,28,29,30]
+# Elapsed_Time = []
+# Elapsed_Time_Grid = []
+
+# for size in Grid_Sizes:
+#     h0_opt_plot, runtime = Optimize(size)
+#     Elapsed_Time.append(runtime)
+#     Elapsed_Time_Grid.append(size)
+
+
+#%%
+
+GRID_SIZE=100
+>>>>>>> 6a38b3dddba1304f77a958e5fc6fddb83afc022f
 h0_1z = np.load(f'FD_NO-REST_meshgrid_h0{GRID_SIZE}.npy')[:,2]
 h0_2z = np.load(f'FD_REST_meshgrid_h0{GRID_SIZE}.npy')[:,2]
 print(f"Grid size: {int(GRID_SIZE)} x {int(GRID_SIZE)}")
 h0_1 = Compose_h0(h0_1z, GRID_SIZE)
 h0_2 = Compose_h0(h0_2z, GRID_SIZE)
 
-# Test Volyme calculation
-print("Rest System volyme:      " + str(System_Volyme(h0_2z, GRID_SIZE)))
-# Test Free energy calculation
-print("Rest System free energy: " + str(System_Free_Energy(h0_2z, GRID_SIZE)))
+Morf_Contactline(h0_2z, GRID_SIZE, 2)
 
-# Test Volyme calculation
-print("Non-Rest System volyme:      " + str(System_Volyme(h0_1z, GRID_SIZE)))
-# Test Free energy calculation
-print("Non-Rest System free energy: " + str(System_Free_Energy(h0_1z, GRID_SIZE)))
 
-h0_opt=Optimization_basinhopping(h0_1z, GRID_SIZE)
-h0_opt_z=h0_opt.x
+#%%
 
-print("Optimized System volyme:      " + str(System_Volyme(h0_opt_z, GRID_SIZE)))
-print("Optimized System free energy: " + str(System_Free_Energy(h0_opt_z, GRID_SIZE)))
-
-h0_opt_plot = Compose_h0(h0_opt_z, GRID_SIZE)
-
-test0(h0_opt_plot)
-test1(h0_opt_plot)
-
-test1(h0_1)
-test1(h0_2)
+fig = plt.figure()
+ax1 = fig.add_subplot(211)
+plt.plot(Elapsed_Time_Grid, Elapsed_Time)
+plt.show()
 
