@@ -128,7 +128,7 @@ def Optimization_basinhopping(h0, GRID_SIZE):
     return h0_opt
 
 
-GRID_SIZE=20
+GRID_SIZE=10
 h0_1z = np.load(f'FD_NO-REST_meshgrid_h0{GRID_SIZE}.npy')[:,2]
 h0_2z = np.load(f'FD_REST_meshgrid_h0{GRID_SIZE}.npy')[:,2]
 print(f"Grid size: {int(GRID_SIZE)} x {int(GRID_SIZE)}")
