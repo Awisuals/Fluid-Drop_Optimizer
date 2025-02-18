@@ -48,11 +48,11 @@ def v_calc_test():
         print(f"Grid size: {grid_dim} x {grid_dim}")
 
         # Volume
-        vol = System_Volyme(h0_data)
+        vol = system_volume(h0_data)
         print("System volume:      " + str(vol))
 
         # Free Energy
-        f_energy = System_Free_Energy(h0_data)
+        f_energy = system_free_energy(h0_data)
         print("System free energy: " + str(f_energy))
 
         volumes.append(vol)
@@ -83,8 +83,8 @@ def f_calc_test(h0_data):
     free_energies = np.empty(0)
 
     for data_id, data in enumerate(h0_data):
-        data_faces = Triangulate_Data(data)
-        f_energy = System_Free_Energy(data, data_faces)
+        data_faces = triangulate_data(data)
+        f_energy = system_free_energy(data, data_faces)
         print("Grid number: " + str(data_id))
         print("Free energy: " + str(f_energy))
         free_energies = np.append(free_energies, f_energy)
@@ -157,8 +157,8 @@ def optimization_basinhopping(h0, grid_size, volume_constraint, num_contact_pts)
 
     # Identify boundary/contact line constraints
     contact_line = morph_contact_line(h0, grid_size, num_contact_pts)
-    h0_boundary = Compose_h0(h0, grid_size)
-    boundary_uniq = Find_Grid_Boundary(h0_boundary)
+    h0_boundary = compose_h0(h0, grid_size)
+    boundary_uniq = find_grid_boundary(h0_boundary)
     h0z_over0_indices = find_indices_greater_than_zero(h0)
 
     # Bound all h0 in [0, 1] for now
@@ -169,7 +169,7 @@ def optimization_basinhopping(h0, grid_size, volume_constraint, num_contact_pts)
     # 2. The boundary points must remain zero (contact line).
     # 3. All nonzero h0 elements >= MIN_HEIGHT.
     constraints = (
-        {'type': 'eq', 'fun': lambda x: System_Volyme(x, grid_size) - volume_constraint},
+        {'type': 'eq', 'fun': lambda x: system_volume(x, grid_size) - volume_constraint},
         {'type': 'eq', 'fun': lambda x: x[boundary_uniq]},
         {'type': 'ineq', 'fun': lambda x: x[h0z_over0_indices] - MIN_HEIGHT},
     )
@@ -182,7 +182,7 @@ def optimization_basinhopping(h0, grid_size, volume_constraint, num_contact_pts)
     }
 
     h0_opt = basinhopping(
-        System_Free_Energy, 
+        system_free_energy, 
         h0,
         minimizer_kwargs=minimizer_kwargs,
         niter=200,
@@ -232,14 +232,14 @@ def optimize(grid_size_val, extra_param=0):
 
     print(f"Grid size: {GRID_SIZE} x {GRID_SIZE}")
 
-    h0_no_rest_2d = Compose_h0(h0_no_rest_z, GRID_SIZE)
-    h0_rest_2d = Compose_h0(h0_rest_z, GRID_SIZE)
+    h0_no_rest_2d = compose_h0(h0_no_rest_z, GRID_SIZE)
+    h0_rest_2d = compose_h0(h0_rest_z, GRID_SIZE)
 
-    rest_system_volume = System_Volyme(h0_rest_z, GRID_SIZE)
-    rest_system_free_energy = System_Free_Energy(h0_rest_z, GRID_SIZE)
+    rest_system_volume = system_volume(h0_rest_z, GRID_SIZE)
+    rest_system_free_energy = system_free_energy(h0_rest_z, GRID_SIZE)
 
-    no_rest_system_volume = System_Volyme(h0_no_rest_z, GRID_SIZE)
-    no_rest_system_free_energy = System_Free_Energy(h0_no_rest_z, GRID_SIZE)
+    no_rest_system_volume = system_volume(h0_no_rest_z, GRID_SIZE)
+    no_rest_system_free_energy = system_free_energy(h0_no_rest_z, GRID_SIZE)
 
     # Print volumes & free energies
     print("Rest System volume:      " + str(rest_system_volume))
@@ -257,11 +257,11 @@ def optimize(grid_size_val, extra_param=0):
     runtime = end_time - start_time
     print(f"Elapsed optimization time: {runtime}")
 
-    print("Optimized System volume:      " + str(System_Volyme(h0_opt_z, GRID_SIZE)))
-    print("Optimized System free energy: " + str(System_Free_Energy(h0_opt_z, GRID_SIZE)))
+    print("Optimized System volume:      " + str(system_volume(h0_opt_z, GRID_SIZE)))
+    print("Optimized System free energy: " + str(system_free_energy(h0_opt_z, GRID_SIZE)))
 
     # Convert optimized 1D array back to 2D for plotting
-    h0_opt_plot = Compose_h0(h0_opt_z, GRID_SIZE)
+    h0_opt_plot = compose_h0(h0_opt_z, GRID_SIZE)
 
     # Visualize results
     test1(h0_opt_plot)   # Plot optimized shape
