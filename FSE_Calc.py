@@ -264,9 +264,9 @@ def optimize(grid_size_val, extra_param=0):
     h0_opt_plot = compose_h0(h0_opt_z, GRID_SIZE)
 
     # Visualize results
-    test1(h0_opt_plot)   # Plot optimized shape
-    test1(h0_no_rest_2d) # Plot original NO-REST shape
-    test1(h0_rest_2d)    # Plot REST shape
+    plot_trisurf_points(h0_opt_plot)   # Plot optimized shape
+    plot_trisurf_points(h0_no_rest_2d) # Plot original NO-REST shape
+    plot_trisurf_points(h0_rest_2d)    # Plot REST shape
 
     return h0_opt_plot, runtime
 
