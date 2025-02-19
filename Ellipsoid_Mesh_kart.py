@@ -127,7 +127,7 @@ ellipsoid_points = np.stack((x_points, y_points, z_points), 1)
 # np.save('FD_REST_meshgrid_h0'+str(N), ellipsoid_points)
 
 # Test Volyme calculation
-print("System volyme:      " + str(System_Volyme(z_points, N)))
+print("System volyme:      " + str(system_volume(z_points, N)))
 
 Plotting([-1,1], [0,0.0025], 0, 
           [x,y,z_ellipsoid], [45,0,8], close=True)
