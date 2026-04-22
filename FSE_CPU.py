@@ -18,6 +18,7 @@ from scipy.spatial import Delaunay
 import matplotlib.pyplot as plt
 from scipy.optimize import basinhopping, minimize_scalar
 import time
+import os.path
 
 from plotting import *       # Custom plotting module
 from functions import *      # Custom functions module
@@ -171,11 +172,11 @@ def optimization_basinhopping(h0, grid_size, volume_constraint, num_contact_pts)
     constraints = (
         {'type': 'eq', 'fun': lambda x: system_volume(x, grid_size) - volume_constraint},
         {'type': 'eq', 'fun': lambda x: x[boundary_uniq]},
-        {'type': 'ineq', 'fun': lambda x: x[h0z_over0_indices] - MIN_HEIGHT},
+        {'type': 'ineq', 'fun': lambda x: x[h0z_over0_indices] - MIN_HEIGHT}
     )
 
     minimizer_kwargs = {
-        "method": "trust-constr",  # or SLSQP
+        "method": "SLSQP",  # SLSQP or trust-constr
         "constraints": constraints,
         "args": grid_size,
         "bounds": bounds
@@ -192,8 +193,8 @@ def optimization_basinhopping(h0, grid_size, volume_constraint, num_contact_pts)
         interval=2,
         disp=True,
         target_accept_rate=0.2,
-        stepwise_factor=0.9,
-        take_step=MyStepFunction()
+        stepwise_factor=0.9#,
+        # take_step=MyStepFunction()
     )
 
     return h0_opt
@@ -250,7 +251,10 @@ def optimize(grid_size_val, extra_param=0):
 
     # Perform optimization
     start_time = time.time()
-    h0_opt = optimization_basinhopping(h0_no_rest_z, GRID_SIZE, no_rest_system_volume, extra_param)
+    h0_opt = optimization_basinhopping(h0_no_rest_z, 
+                                       GRID_SIZE, 
+                                       no_rest_system_volume, 
+                                       extra_param)
     h0_opt_z = h0_opt.x
     end_time = time.time()
 
@@ -261,14 +265,52 @@ def optimize(grid_size_val, extra_param=0):
     print("Optimized System free energy: " + str(system_free_energy(h0_opt_z, GRID_SIZE)))
 
     # Convert optimized 1D array back to 2D for plotting
-    h0_opt_plot = compose_h0(h0_opt_z, GRID_SIZE)
+    h0_opt_points = compose_h0(h0_opt_z, GRID_SIZE)
+    
+    method = "SLSQP"
+    h0_file_name = 'FD_OPT_meshgrid_h0'+str(GRID_SIZE)+str(f'-CPU-{method}')
+
+    if os.path.isfile(h0_file_name+'.npy'):
+        os.remove(h0_file_name+'.npy')
+
+    np.save(h0_file_name, h0_opt_points)
+
+    SAVEFILE = f'RUNFILE-CPU-{method}.txt'
+
+    with open(SAVEFILE, "a") as f:
+        f.write("-" * 40 + "\n")
+        f.write(f"Grid: {GRID_SIZE}x{GRID_SIZE}\n")
+        f.write(f"Method: {method}\n")
+        f.write(f"Elapsed Optimization time: {runtime}\n")
+        f.write(f"\n")
+        
+        f.write(f"Non-Rest System volume:   {no_rest_system_volume}\n" )
+        f.write(f"Optimized System volume:   {system_volume(h0_opt_z, GRID_SIZE)}\n")
+        f.write(f"Rest System volume:   {rest_system_volume}\n")
+        
+        f.write(f"\n")
+        
+        f.write(f"Non-Rest System free energy:  {no_rest_system_free_energy}\n")
+        f.write(f"Optimized System free energy:  {system_free_energy(h0_opt_z, GRID_SIZE)}\n")
+        f.write(f"Rest System free energy:  {rest_system_free_energy}\n")
+        
+        f.write("\n")
 
     # Visualize results
-    plot_trisurf_points(h0_opt_plot)   # Plot optimized shape
-    plot_trisurf_points(h0_no_rest_2d) # Plot original NO-REST shape
-    plot_trisurf_points(h0_rest_2d)    # Plot REST shape
+    # plot_trisurf_points(h0_opt_points)   # Plot optimized shape
+    # plot_trisurf_points(h0_no_rest_2d) # Plot original NO-REST shape
+    # plot_trisurf_points(h0_rest_2d)    # Plot REST shape
 
-    return h0_opt_plot, runtime
+    # plot_trisurf_faces(data1=h0_no_rest_2d,
+    #                data2=h0_opt_points,
+    #                data3=h0_rest_2d,
+    #                z_scale=[0,0.0015],
+    #                view_param=[15,45,8]
+    #             #    title="Triangulated surface representation of a sessile droplet in equilibrium"
+    #                )
+
+
+    return h0_opt_points, runtime
 
 
 def morph_contact_line(h0, grid_size_val, num_contact_pts):
@@ -300,8 +342,10 @@ def morph_contact_line(h0, grid_size_val, num_contact_pts):
     return contact_line_indices
 
 
+
+
 # Example call
-optimize(10, 0)
+optimize(10)
 
 # Below are optional experiments, commented out:
 # ----------------------------------------------------

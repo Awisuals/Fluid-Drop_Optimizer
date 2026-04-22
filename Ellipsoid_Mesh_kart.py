@@ -4,22 +4,15 @@ Created on Wed Jun 14 13:07:04 2023
 
 @author: anter
 """
-import pylab as pl
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import mpl_toolkits.mplot3d as a3
 import numpy as np
-import scipy as sp
 import math as m
-from scipy import spatial as sp_spatial
-from plotting import Plotting
+from plotting import *
 from surfature import Surface_Curvature
-from scipy.spatial import Delaunay
 from functions import *
 
 def ellipsoid_z(X, Y, a, b, c):
     # z = np.sqrt(c**2*(1-(X**2/a**2)-(Y**2/b**2)))# -0.5
-    z = (c+b*np.sqrt(1-a*(X**2+Y**2)))*2.5657562917683223
+    z = (c+b*np.sqrt(1-a*(X**2+Y**2)))
     for idr, row in enumerate(z):
         for idc, column in enumerate(row):
             if m.isnan(column):
@@ -97,51 +90,110 @@ def generate_grids(max_grid_size):
         
         np.save('FD_NO-REST_meshgrid_h0'+str(i), ellipsoid_points)
         i+=1
+
+
+def Cut_Ellipsoid_With_Plane(ellipsoid, plane):    
+    for idr, r in enumerate(ellipsoid):
+        for idc, c in enumerate(r):
+            if plane[idr, idc] > ellipsoid[idr, idc]:
+                ellipsoid[idr, idc] = plane[idr, idc]
     
 # generate_grids(31)
 
+
+
 GRID_SCALE=0.0035
-N = 100
+# GRID_SCALE=0.05
+N = 10
 plane_params = [0, 0, 2, 1]
 x = np.linspace(-GRID_SCALE,GRID_SCALE,N)
 y = np.linspace(-GRID_SCALE,GRID_SCALE,N)
 [x, y] = np.meshgrid(x,y, sparse=False)
-z_ellipsoid = ellipsoid_z(x, y, 1.5e+05, # 1.5e+05 5.846411733602286e+04 
+
+# ==========================================================================
+
+z_ellipsoid_rest = ellipsoid_z(x, y, 5.846411733602286e+04, # 1.5e+05 5.846411733602286e+04 
                           0.000000290055701e+04, 
                           -0.000000250719341e+04) #0.75, 0.75, 0.8)
 z_plane = plane_z(x, y, plane_params[0], plane_params[1], 
           plane_params[2], plane_params[3])
-def Cut_Ellipsoid_With_Plane():    
-    for idr, r in enumerate(z_ellipsoid):
-        for idc, c in enumerate(r):
-            if z_plane[idr, idc] > z_ellipsoid[idr, idc]:
-                z_ellipsoid[idr, idc] = z_plane[idr, idc]
-Cut_Ellipsoid_With_Plane()
+Cut_Ellipsoid_With_Plane(z_ellipsoid_rest, z_plane)
 
 x_points = np.reshape(x, -1)
 y_points = np.reshape(y, -1)
-z_points = np.reshape(z_ellipsoid, -1)
-ellipsoid_points = np.stack((x_points, y_points, z_points), 1)
+z_points_rest = np.reshape(z_ellipsoid_rest, -1)
+ellipsoid_points_rest = np.stack((x_points, y_points, z_points_rest), 1)
+
+# ===========================================================================
+
+# Create norest ellipsoid
+# Multiply z-values with const 2.56... (based on wrong assumptions but kinda works)
+z_ellipsoid_norest = 2.5657562917683223 * ellipsoid_z(x, y, 1.5e+05,  
+                          0.000000290055701e+04, 
+                          -0.000000250719341e+04) #0.75, 0.75, 0.8)
+
+z_plane = plane_z(x, y, plane_params[0], plane_params[1], 
+          plane_params[2], plane_params[3])
+Cut_Ellipsoid_With_Plane(z_ellipsoid_norest, z_plane)
+
+x_points = np.reshape(x, -1)
+y_points = np.reshape(y, -1)
+z_points_norest = np.reshape(z_ellipsoid_norest, -1)
+ellipsoid_points_norest = np.stack((x_points, y_points, z_points_norest), 1)
+
+# ellipsoid_points_norest = np.load(f'FD_NO-REST_meshgrid_h0{N}.npy')
+# print(ellipsoid_points_norest)
 
 # np.save('FD_NO-REST_meshgrid_h0'+str(N), ellipsoid_points)
 # np.save('FD_REST_meshgrid_h0'+str(N), ellipsoid_points)
 
 # Test Volyme calculation
-print("System volyme:      " + str(system_volume(z_points, N)))
+print("No Rest System volyme: " + str(system_volume(ellipsoid_points_norest[:, 2], N)))
+print("Rest System volyme: " + str(system_volume(ellipsoid_points_rest[:, 2], N)))
 
-Plotting([-1,1], [0,0.0025], 0, 
-          [x,y,z_ellipsoid], [45,0,8], close=True)
+# Test Energy calculation
+print("No Rest System energy: " + str(system_free_energy(ellipsoid_points_norest[:, 2], N)))
+print("Rest System energy: " + str(system_free_energy(ellipsoid_points_rest[:, 2], N)))
+
+# plot_3d_surface_or_scatter([-1,1], 
+#                            [0,0.0015], 
+#                            1, 
+#                            [x,y,z_ellipsoid_norest], 
+#                            [25,45,8], 
+#                            title="Point cloud representation of a sessile droplet")
+
+# plot_trisurf_faces(data1=ellipsoid_points_rest,
+#                    data2=ellipsoid_points_norest,
+#                    z_scale=[0,0.0015],
+#                    view_param=[15,45,8]
+#                 #    title="Triangulated surface representation of a sessile droplet in equilibrium"
+#                    )
+
+
+# ellipsoid_points_opt = np.load(f'FD_OPT_meshgrid_h010-CPU-trustconstr.npy')
+h0_opt = np.load(f'FD_OPT_meshgrid_h010-CPU-trustconstr.npy')
+# h0_eq = np.load(f'FD_REST_meshgrid_h010.npy')
+h0_inp = np.load(f'FD_NO-REST_meshgrid_h010.npy')
+
+
+plot_trisurf_faces(data1=h0_inp,
+                   data2=h0_opt,
+                #    data3=h0_eq,
+                   z_scale=[0,0.0015],
+                   view_param=[15,45,8]
+                #    title="Triangulated surface representation of a sessile droplet in equilibrium"
+                   )
 
 
 # =============================================================
 
 
-# Modify points so we have just ellipsoid
-x_mod, y_mod, z_mod = remove_plane_points(x_points, 
-                                          y_points, 
-                                          z_points, 
-                                          z_points[0])
-ellipsoid_points_mod = np.stack((x_mod, y_mod, z_mod), 1)
+# # Modify points so we have just ellipsoid
+# x_mod, y_mod, z_mod = remove_plane_points(x_points, 
+#                                           y_points, 
+#                                           z_points, 
+#                                           z_points[0])
+# ellipsoid_points_mod = np.stack((x_mod, y_mod, z_mod), 1)
 
 # print(f'z_points first value = {z_points[0]}')
 
@@ -152,13 +204,13 @@ ellipsoid_points_mod = np.stack((x_mod, y_mod, z_mod), 1)
 # ellipsoid_points = np.stack((x_2d, y_2d, z_2d), 1)
 
 # Plotting just points
-Plotting([-1,1], [-1, 1], 1,# for z 0,1.4
-         [x_points,y_points,z_points], [45,0,8], 
-         close=True)
+# plot_3d_surface_or_scatter([-1,1], [-1, 1], 1,# for z 0,1.4
+#          [x_points,y_points,z_points], [45,0,8], 
+#          close=True)
 
-Plotting([-1,1], [-1,1], 1, 
-         [x_mod,y_mod,z_mod], [45,0,8], 
-         close=True)
+# plot_3d_surface_or_scatter([-1,1], [-1,1], 1, 
+#          [x_mod,y_mod,z_mod], [45,0,8], 
+#          close=True)
 
 # Plotting([-1,1], [0,1.4], 0, 
 #          [x_2d, y_2d, z_2d], [45,0,8], 7
@@ -213,3 +265,4 @@ Plotting([-1,1], [-1,1], 1,
 # plt.show()
 # plt.tight_layout()
 # plt.close()
+

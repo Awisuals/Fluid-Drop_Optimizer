@@ -12,7 +12,7 @@ import numpy as np
 import scipy as sp
 import math as m
 from scipy import spatial as sp_spatial
-from Surfature import surface_curvature
+# from Surfature import surface_curvature
 
 font = {'weight' : 'normal',
         'size'   : 15}
