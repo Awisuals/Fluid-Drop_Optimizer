@@ -176,7 +176,7 @@ def optimization_basinhopping(h0, grid_size, volume_constraint, num_contact_pts)
     )
 
     minimizer_kwargs = {
-        "method": "SLSQP",  # SLSQP or trust-constr
+        "method": "trust-constr",  # SLSQP or trust-constr
         "constraints": constraints,
         "args": grid_size,
         "bounds": bounds
@@ -267,7 +267,7 @@ def optimize(grid_size_val, extra_param=0):
     # Convert optimized 1D array back to 2D for plotting
     h0_opt_points = compose_h0(h0_opt_z, GRID_SIZE)
     
-    method = "SLSQP"
+    method = "trustconstr"
     h0_file_name = 'FD_OPT_meshgrid_h0'+str(GRID_SIZE)+str(f'-CPU-{method}')
 
     if os.path.isfile(h0_file_name+'.npy'):
@@ -342,10 +342,15 @@ def morph_contact_line(h0, grid_size_val, num_contact_pts):
     return contact_line_indices
 
 
+# Call optimizer
+grid_sizes = [10,11,12,13,14,15,16,17,18,19,20,
+              21,22,23,24,25,26,27,28,29,30]
+
+for i in grid_sizes:
+    optimize(i)
 
 
-# Example call
-optimize(10)
+
 
 # Below are optional experiments, commented out:
 # ----------------------------------------------------

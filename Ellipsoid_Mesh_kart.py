@@ -104,7 +104,7 @@ def Cut_Ellipsoid_With_Plane(ellipsoid, plane):
 
 GRID_SCALE=0.0035
 # GRID_SCALE=0.05
-N = 10
+N = 30
 plane_params = [0, 0, 2, 1]
 x = np.linspace(-GRID_SCALE,GRID_SCALE,N)
 y = np.linspace(-GRID_SCALE,GRID_SCALE,N)
@@ -171,9 +171,9 @@ print("Rest System energy: " + str(system_free_energy(ellipsoid_points_rest[:, 2
 
 
 # ellipsoid_points_opt = np.load(f'FD_OPT_meshgrid_h010-CPU-trustconstr.npy')
-h0_opt = np.load(f'FD_OPT_meshgrid_h010-CPU-trustconstr.npy')
-# h0_eq = np.load(f'FD_REST_meshgrid_h010.npy')
-h0_inp = np.load(f'FD_NO-REST_meshgrid_h010.npy')
+h0_opt = np.load(f'FD_OPT_meshgrid_h0{N}-CPU-trustconstr.npy')
+h0_eq = np.load(f'FD_REST_meshgrid_h0{N}.npy')
+h0_inp = np.load(f'FD_NO-REST_meshgrid_h0{N}.npy')
 
 
 plot_trisurf_faces(data1=h0_inp,
