@@ -8,12 +8,10 @@ Write system free energy calculation GPU-acceleration in mind.
 """
 import numpy as np
 from scipy.spatial import Delaunay
-import matplotlib.pyplot as plt
 from scipy.optimize import basinhopping
-from scipy.optimize import minimize_scalar
 from plotting import *
 import time
-import math as m
+import os
 from numba import cuda
 cuda.close()
 
@@ -471,24 +469,25 @@ def Optimization_basinhopping(h0, GRID_SIZE, volume_constrt, N):
     bounds=[(0,1)]
     cons = ({'type': 'eq', 'fun': lambda h0: Parallel_Sys_V(h0, GRID_SIZE)-volume_constrt},
             {'type': 'eq', 'fun': lambda h0: h0[boundary_uniq]},
-            {'type': 'ineq', 'fun': lambda h0: h0[h0z_over0_indices] - 0.00015})
+            {'type': 'ineq', 'fun': lambda h0: h0[h0z_over0_indices] - 0.0002}) # 0.0002 is min height
     # ,{'type': 'eq', 'fun': lambda h0: h0[contact_line]}
     minimizer_kwargs = {"method":"trust-constr", # SLSQP trust-constr 
                         "constraints":cons, 
                         "args":GRID_SIZE, 
                         "bounds":bounds
                         } # "hess":True , "jac":True
-    h0_opt = basinhopping(Parallel_Sys_FE, h0, 
-                       minimizer_kwargs=minimizer_kwargs, 
-                       niter=50, 
-                       T=0.1,
-                       stepsize=0.1,
-                       niter_success=2,
-                       interval=2,
-                       disp=True,
-                       target_accept_rate=0.2,
-                       stepwise_factor=0.9,
-                       take_step = MyStepFunction())
+    h0_opt = basinhopping(Parallel_Sys_FE, 
+                          h0, 
+                          minimizer_kwargs=minimizer_kwargs, 
+                          niter=200, 
+                          T=0.1,
+                          stepsize=0.01,
+                          niter_success=5,
+                          interval=2,
+                          disp=True,
+                          target_accept_rate=0.2,
+                          stepwise_factor=0.9)
+                        #   take_step = MyStepFunction())
     return h0_opt
 
 
@@ -501,24 +500,27 @@ def main(N, M=0):
     h0_1 = Compose_Model_XYZ_Points(h0_1z, GRID_SIZE)
     h0_2 = Compose_Model_XYZ_Points(h0_2z, GRID_SIZE)
     
-    Rest_System_volyme = Parallel_Sys_V(h0_2z, GRID_SIZE)
-    Rest_System_free_energy = Parallel_Sys_FE(h0_2z, GRID_SIZE)
+    rest_system_volyme = Parallel_Sys_V(h0_2z, GRID_SIZE)
+    rest_system_free_energy = Parallel_Sys_FE(h0_2z, GRID_SIZE)
     
-    NonRest_System_volyme = Parallel_Sys_V(h0_1z, GRID_SIZE)
-    NonRest_System_free_energy = Parallel_Sys_FE(h0_1z, GRID_SIZE)
-    
-    # Test Volyme calculation
-    print("Rest System volyme:      " + str(Rest_System_volyme))
-    # Test Free energy calculation
-    print("Rest System free energy: " + str(Rest_System_free_energy))
+    nonrest_system_volyme = Parallel_Sys_V(h0_1z, GRID_SIZE)
+    nonrest_system_free_energy = Parallel_Sys_FE(h0_1z, GRID_SIZE)
     
     # Test Volyme calculation
-    print("Non-Rest System volyme:      " + str(NonRest_System_volyme))
+    print("Rest System volyme:      " + str(rest_system_volyme))
     # Test Free energy calculation
-    print("Non-Rest System free energy: " + str(NonRest_System_free_energy))
+    print("Rest System free energy: " + str(rest_system_free_energy))
+    
+    # Test Volyme calculation
+    print("Non-Rest System volyme:      " + str(nonrest_system_volyme))
+    # Test Free energy calculation
+    print("Non-Rest System free energy: " + str(nonrest_system_free_energy))
     
     start = time.time()
-    h0_opt=Optimization_basinhopping(h0_1z, GRID_SIZE, NonRest_System_volyme, M)
+    h0_opt=Optimization_basinhopping(h0_1z, 
+                                     GRID_SIZE, 
+                                     nonrest_system_volyme, 
+                                     M)
     h0_opt_z=h0_opt.x
     end = time.time()
     runtime = end - start
@@ -527,15 +529,55 @@ def main(N, M=0):
     print("Optimized System volyme:      " + str(Parallel_Sys_V(h0_opt_z, GRID_SIZE)))
     print("Optimized System free energy: " + str(Parallel_Sys_FE(h0_opt_z, GRID_SIZE)))
     
-    h0_opt_plot = Compose_Model_XYZ_Points(h0_opt_z, GRID_SIZE)
+    h0_opt_points = Compose_Model_XYZ_Points(h0_opt_z, GRID_SIZE)
+    
+    
+    method = "trustconstr"
+    h0_file_name = 'FD_OPT_meshgrid_h0'+str(GRID_SIZE)+str(f'-GPU-{method}')
+
+    if os.path.isfile(h0_file_name+'.npy'):
+        os.remove(h0_file_name+'.npy')
+
+    np.save(h0_file_name, h0_opt_points)
+
+    SAVEFILE = f'RUNFILE-GPU-{method}.txt'
+
+    with open(SAVEFILE, "a") as f:
+        f.write("-" * 40 + "\n")
+        f.write(f"Grid: {GRID_SIZE}x{GRID_SIZE}\n")
+        f.write(f"Method: {method}\n")
+        f.write(f"Elapsed Optimization time: {runtime}\n")
+        f.write(f"\n")
+        
+        f.write(f"Non-Rest System volume:   {nonrest_system_volyme}\n" )
+        f.write(f"Optimized System volume:   {Parallel_Sys_V(h0_opt_z, GRID_SIZE)}\n")
+        f.write(f"Rest System volume:   {rest_system_volyme}\n")
+        
+        f.write(f"\n")
+        
+        f.write(f"Non-Rest System free energy:  {nonrest_system_free_energy}\n")
+        f.write(f"Optimized System free energy:  {Parallel_Sys_FE(h0_opt_z, GRID_SIZE)}\n")
+        f.write(f"Rest System free energy:  {rest_system_free_energy}\n")
+        
+        f.write("\n")
+
     
     # test0(h0_opt_plot)
-    test1(h0_opt_plot) # Surface plot
+    # test1(h0_opt_plot) # Surface plot
     
-    test1(h0_1) # surface plot of given h0
-    test1(h0_2) # surface plot of  rest form of h0
+    # test1(h0_1) # surface plot of given h0
+    # test1(h0_2) # surface plot of  rest form of h0
     
-    return h0_opt_plot, runtime
+    plot_trisurf_faces(data1=h0_1,
+                   data2=h0_opt_points,
+                   data3=h0_2,
+                   z_scale=[0,0.0015],
+                   view_param=[15,45,8]
+                #    title="Triangulated surface representation of a sessile droplet in equilibrium"
+                   )
 
-main(30, 2)
+    
+    return h0_opt_points, runtime
+
+main(15)
 
