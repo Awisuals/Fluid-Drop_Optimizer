@@ -112,7 +112,7 @@ y = np.linspace(-GRID_SCALE,GRID_SCALE,N)
 
 # ==========================================================================
 
-z_ellipsoid_rest = ellipsoid_z(x, y, 5.846411733602286e+04, # 1.5e+05 5.846411733602286e+04 
+z_ellipsoid_rest = ellipsoid_z(x, y, 5.846411733602286e+04, # 5.846411733602286e+04 
                           0.000000290055701e+04, 
                           -0.000000250719341e+04) #0.75, 0.75, 0.8)
 z_plane = plane_z(x, y, plane_params[0], plane_params[1], 
@@ -128,7 +128,7 @@ ellipsoid_points_rest = np.stack((x_points, y_points, z_points_rest), 1)
 
 # Create norest ellipsoid
 # Multiply z-values with const 2.56... (based on wrong assumptions but kinda works)
-z_ellipsoid_norest = 2.5657562917683223 * ellipsoid_z(x, y, 1.5e+05,  
+z_ellipsoid_norest =2.5657562917683223 * ellipsoid_z(x, y, 1.5e+05, # 2.5657562917683223 *   
                           0.000000290055701e+04, 
                           -0.000000250719341e+04) #0.75, 0.75, 0.8)
 
@@ -171,18 +171,25 @@ print("Rest System energy: " + str(system_free_energy(ellipsoid_points_rest[:, 2
 
 
 # ellipsoid_points_opt = np.load(f'FD_OPT_meshgrid_h010-CPU-trustconstr.npy')
+<<<<<<< HEAD
 h0_opt = np.load(f'FD_OPT_meshgrid_h0{N}-CPU-trustconstr.npy')
 h0_eq = np.load(f'FD_REST_meshgrid_h0{N}.npy')
 h0_inp = np.load(f'FD_NO-REST_meshgrid_h0{N}.npy')
+=======
+# h0_opt = np.load(f'FD_OPT_meshgrid_h010-GPU-SLSQP.npy')
+h0_eq = np.load(f'FD_REST_meshgrid_h020.npy')
+h0_inp = np.load(f'FD_NO-REST_meshgrid_h020.npy')
+>>>>>>> origin/main
 
 
-plot_trisurf_faces(data1=h0_inp,
-                   data2=h0_opt,
-                #    data3=h0_eq,
-                   z_scale=[0,0.0015],
-                   view_param=[15,45,8]
-                #    title="Triangulated surface representation of a sessile droplet in equilibrium"
-                   )
+# plot_trisurf_faces(data1=h0_inp,
+#                 #    data2=h0_opt,
+#                    data3=h0_eq,
+#                    z_scale=[0,0.0015],
+#                    view_param=[15,45,8],
+#                    title1="Surface representing modified droplet for input",
+#                    title3="Surface representing resting droplet for comparison"
+#                    )
 
 
 # =============================================================

@@ -296,8 +296,8 @@ def plot_trisurf_faces(data1,
         ax.set_zlabel('z')
         ax.set_title(title)
            
-        fig.colorbar(sc, ax=ax, label='z', shrink=0.75)
     
+    fig.colorbar(sc, ax=ax, label='z', shrink=0.75)
     
     plt.tight_layout()
     plt.show()
