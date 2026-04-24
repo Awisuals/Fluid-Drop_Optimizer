@@ -104,7 +104,7 @@ def Cut_Ellipsoid_With_Plane(ellipsoid, plane):
 
 GRID_SCALE=0.0035
 # GRID_SCALE=0.05
-N = 10
+N = 30
 plane_params = [0, 0, 2, 1]
 x = np.linspace(-GRID_SCALE,GRID_SCALE,N)
 y = np.linspace(-GRID_SCALE,GRID_SCALE,N)
@@ -171,19 +171,19 @@ print("Rest System energy: " + str(system_free_energy(ellipsoid_points_rest[:, 2
 
 
 # ellipsoid_points_opt = np.load(f'FD_OPT_meshgrid_h010-CPU-trustconstr.npy')
-# h0_opt = np.load(f'FD_OPT_meshgrid_h010-GPU-SLSQP.npy')
-h0_eq = np.load(f'FD_REST_meshgrid_h020.npy')
-h0_inp = np.load(f'FD_NO-REST_meshgrid_h020.npy')
+h0_opt = np.load(f'FD_OPT_meshgrid_h0{N}-GPU-trustconstr.npy')
+# h0_eq = np.load(f'FD_REST_meshgrid_h0{N}.npy')
+h0_inp = np.load(f'FD_NO-REST_meshgrid_h0{N}.npy')
 
 
-# plot_trisurf_faces(data1=h0_inp,
-#                 #    data2=h0_opt,
-#                    data3=h0_eq,
-#                    z_scale=[0,0.0015],
-#                    view_param=[15,45,8],
-#                    title1="Surface representing modified droplet for input",
-#                    title3="Surface representing resting droplet for comparison"
-#                    )
+plot_trisurf_faces(data1=h0_inp,
+                   data2=h0_opt,
+                #    data3=h0_eq,
+                   z_scale=[0,0.0015],
+                   view_param=[15,45,8],
+                   title1="Surface representing modified droplet for input",
+                   title3="Surface representing resting droplet for comparison"
+                   )
 
 
 # =============================================================
