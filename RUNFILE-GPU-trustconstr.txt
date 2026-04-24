@@ -1,0 +1,273 @@
+----------------------------------------
+Grid: 10x10
+Method: trustconstr
+Elapsed Optimization time: 165.60856413841248
+
+Non-Rest System volume:   2.5545755553405364e-09
+Optimized System volume:   2.5551213850138326e-09
+Rest System volume:   2.728267131287824e-09
+
+Non-Rest System free energy:  3.6562378338425955e-06
+Optimized System free energy:  3.692641781902351e-06
+Rest System free energy:  3.6016885244335827e-06
+
+----------------------------------------
+Grid: 11x11
+Method: trustconstr
+Elapsed Optimization time: 121.665846824646
+
+Non-Rest System volume:   2.7899126636946967e-09
+Optimized System volume:   2.7904374117680456e-09
+Rest System volume:   2.6728483450507143e-09
+
+Non-Rest System free energy:  3.6483873438100214e-06
+Optimized System free energy:  3.6964282473277755e-06
+Rest System free energy:  3.581014228790666e-06
+
+----------------------------------------
+Grid: 12x12
+Method: trustconstr
+Elapsed Optimization time: 145.01542377471924
+
+Non-Rest System volume:   2.7536590174222856e-09
+Optimized System volume:   2.754205249576072e-09
+Rest System volume:   2.7911689206723197e-09
+
+Non-Rest System free energy:  3.6481730024959147e-06
+Optimized System free energy:  3.708060368740075e-06
+Rest System free energy:  3.580227635286212e-06
+
+----------------------------------------
+Grid: 13x13
+Method: trustconstr
+Elapsed Optimization time: 398.5198905467987
+
+Non-Rest System volume:   2.6037246205168114e-09
+Optimized System volume:   2.604351357904328e-09
+Rest System volume:   2.733968849940199e-09
+
+Non-Rest System free energy:  3.6673279789637436e-06
+Optimized System free energy:  3.7138295357231053e-06
+Rest System free energy:  3.576951989263496e-06
+
+----------------------------------------
+Grid: 14x14
+Method: trustconstr
+Elapsed Optimization time: 451.82656812667847
+
+Non-Rest System volume:   2.7434104842780398e-09
+Optimized System volume:   2.743932452187685e-09
+Rest System volume:   2.733887289764725e-09
+
+Non-Rest System free energy:  3.6585375165555498e-06
+Optimized System free energy:  3.7209700749259613e-06
+Rest System free energy:  3.5915929353577464e-06
+
+----------------------------------------
+Grid: 15x15
+Method: trustconstr
+Elapsed Optimization time: 352.1786723136902
+
+Non-Rest System volume:   2.8544296585728493e-09
+Optimized System volume:   2.855148298716355e-09
+Rest System volume:   2.6983004517573305e-09
+
+Non-Rest System free energy:  3.654801076727692e-06
+Optimized System free energy:  3.7301158007480104e-06
+Rest System free energy:  3.587688246295808e-06
+
+----------------------------------------
+Grid: 16x16
+Method: trustconstr
+Elapsed Optimization time: 323.2211585044861
+
+Non-Rest System volume:   2.7620502352082265e-09
+Optimized System volume:   2.7625967931786644e-09
+Rest System volume:   2.729225553046334e-09
+
+Non-Rest System free energy:  3.664756678409751e-06
+Optimized System free energy:  3.7333695235785966e-06
+Rest System free energy:  3.5766906011930135e-06
+
+----------------------------------------
+Grid: 17x17
+Method: trustconstr
+Elapsed Optimization time: 408.0888774394989
+
+Non-Rest System volume:   2.7223422074990464e-09
+Optimized System volume:   2.7229659517155483e-09
+Rest System volume:   2.7538569520165453e-09
+
+Non-Rest System free energy:  3.6678395172647375e-06
+Optimized System free energy:  3.7391568823441323e-06
+Rest System free energy:  3.571911623281426e-06
+
+----------------------------------------
+Grid: 18x18
+Method: trustconstr
+Elapsed Optimization time: 457.6422748565674
+
+Non-Rest System volume:   2.7751313061152914e-09
+Optimized System volume:   2.775732872222724e-09
+Rest System volume:   2.749706438203357e-09
+
+Non-Rest System free energy:  3.6579578441709735e-06
+Optimized System free energy:  3.7374518790122488e-06
+Rest System free energy:  3.577562416985439e-06
+
+----------------------------------------
+Grid: 19x19
+Method: trustconstr
+Elapsed Optimization time: 654.7826945781708
+
+Non-Rest System volume:   2.756027283768911e-09
+Optimized System volume:   2.7565712845452744e-09
+Rest System volume:   2.7404234564615455e-09
+
+Non-Rest System free energy:  3.6634226703804006e-06
+Optimized System free energy:  3.745626707942273e-06
+Rest System free energy:  3.5772327402862603e-06
+
+----------------------------------------
+Grid: 20x20
+Method: trustconstr
+Elapsed Optimization time: 1016.0124711990356
+
+Non-Rest System volume:   2.6829739468141026e-09
+Optimized System volume:   2.68349280108222e-09
+Rest System volume:   2.72542977452743e-09
+
+Non-Rest System free energy:  3.671293436686545e-06
+Optimized System free energy:  3.7396966559452475e-06
+Rest System free energy:  3.5761716743322077e-06
+
+----------------------------------------
+Grid: 21x21
+Method: trustconstr
+Elapsed Optimization time: 2119.4239208698273
+
+Non-Rest System volume:   2.7767961674557722e-09
+Optimized System volume:   2.7772891739040624e-09
+Rest System volume:   2.729782440128193e-09
+
+Non-Rest System free energy:  3.6694702467809695e-06
+Optimized System free energy:  3.749716661844537e-06
+Rest System free energy:  3.574657967791266e-06
+
+----------------------------------------
+Grid: 22x22
+Method: trustconstr
+Elapsed Optimization time: 1017.5778217315674
+
+Non-Rest System volume:   2.7480792778786217e-09
+Optimized System volume:   2.748632976915135e-09
+Rest System volume:   2.7461809221674904e-09
+
+Non-Rest System free energy:  3.6670136684669344e-06
+Optimized System free energy:  3.7571592861969853e-06
+Rest System free energy:  3.5735926602855907e-06
+
+----------------------------------------
+Grid: 23x23
+Method: trustconstr
+Elapsed Optimization time: 1306.811383008957
+
+Non-Rest System volume:   2.7014059747670896e-09
+Optimized System volume:   2.7019512784553697e-09
+Rest System volume:   2.741524105934923e-09
+
+Non-Rest System free energy:  3.6708394886507608e-06
+Optimized System free energy:  3.761561931605713e-06
+Rest System free energy:  3.575685645348248e-06
+
+----------------------------------------
+Grid: 24x24
+Method: trustconstr
+Elapsed Optimization time: 1274.4832997322083
+
+Non-Rest System volume:   2.733474710558501e-09
+Optimized System volume:   2.7340489149327948e-09
+Rest System volume:   2.7404894295510966e-09
+
+Non-Rest System free energy:  3.670131449123593e-06
+Optimized System free energy:  3.7645238479344534e-06
+Rest System free energy:  3.576317297973795e-06
+
+----------------------------------------
+Grid: 25x25
+Method: trustconstr
+Elapsed Optimization time: 2268.831212759018
+
+Non-Rest System volume:   2.7474127687172123e-09
+Optimized System volume:   2.7479090344479027e-09
+Rest System volume:   2.7293706794208166e-09
+
+Non-Rest System free energy:  3.671038066355353e-06
+Optimized System free energy:  3.7609273607020078e-06
+Rest System free energy:  3.5750218414881307e-06
+
+----------------------------------------
+Grid: 26x26
+Method: trustconstr
+Elapsed Optimization time: 1656.206954717636
+
+Non-Rest System volume:   2.7307455019767405e-09
+Optimized System volume:   2.7313337942949125e-09
+Rest System volume:   2.7362125407040247e-09
+
+Non-Rest System free energy:  3.6717482050369723e-06
+Optimized System free energy:  3.7744159847699434e-06
+Rest System free energy:  3.5740313059449893e-06
+
+----------------------------------------
+Grid: 27x27
+Method: trustconstr
+Elapsed Optimization time: 2201.6061129570007
+
+Non-Rest System volume:   2.7436991417711093e-09
+Optimized System volume:   2.7442148768135313e-09
+Rest System volume:   2.7394479355556632e-09
+
+Non-Rest System free energy:  3.6681397097875353e-06
+Optimized System free energy:  3.77404633251954e-06
+Rest System free energy:  3.572693132378376e-06
+
+----------------------------------------
+Grid: 28x28
+Method: trustconstr
+Elapsed Optimization time: 3418.7274889945984
+
+Non-Rest System volume:   2.7407353510398317e-09
+Optimized System volume:   2.741245289839604e-09
+Rest System volume:   2.7411679215752503e-09
+
+Non-Rest System free energy:  3.6702533562810663e-06
+Optimized System free energy:  3.7791659763142475e-06
+Rest System free energy:  3.57502379213762e-06
+
+----------------------------------------
+Grid: 29x29
+Method: trustconstr
+Elapsed Optimization time: 4450.836511135101
+
+Non-Rest System volume:   2.7387395922183007e-09
+Optimized System volume:   2.7392352036243244e-09
+Rest System volume:   2.737969132565124e-09
+
+Non-Rest System free energy:  3.674154838185038e-06
+Optimized System free energy:  3.776571269653676e-06
+Rest System free energy:  3.5745290268602906e-06
+
+----------------------------------------
+Grid: 30x30
+Method: trustconstr
+Elapsed Optimization time: 2690.8991684913635
+
+Non-Rest System volume:   2.7455115551449683e-09
+Optimized System volume:   2.7460206676682633e-09
+Rest System volume:   2.7329970412231578e-09
+
+Non-Rest System free energy:  3.6703921227785152e-06
+Optimized System free energy:  3.7759490635053563e-06
+Rest System free energy:  3.573833541193431e-06
+

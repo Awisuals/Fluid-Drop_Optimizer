@@ -568,16 +568,24 @@ def main(N, M=0):
     # test1(h0_1) # surface plot of given h0
     # test1(h0_2) # surface plot of  rest form of h0
     
-    plot_trisurf_faces(data1=h0_1,
-                   data2=h0_opt_points,
-                   data3=h0_2,
-                   z_scale=[0,0.0015],
-                   view_param=[15,45,8]
-                #    title="Triangulated surface representation of a sessile droplet in equilibrium"
-                   )
+    # plot_trisurf_faces(data1=h0_1,
+    #                data2=h0_opt_points,
+    #                data3=h0_2,
+    #                z_scale=[0,0.0015],
+    #                view_param=[15,45,8]
+    #             #    title="Triangulated surface representation of a sessile droplet in equilibrium"
+    #                )
 
     
     return h0_opt_points, runtime
 
-main(15)
+
+# Call optimizer
+grid_sizes = [10,11,12,13,14,15,16,17,18,19,20,
+              21,22,23,24,25,26,27,28,29,30]
+
+for i in grid_sizes:
+    main(i)
+
+
 
