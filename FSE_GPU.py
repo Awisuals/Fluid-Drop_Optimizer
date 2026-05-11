@@ -469,8 +469,8 @@ def Optimization_basinhopping(h0, GRID_SIZE, volume_constrt, N):
     bounds=[(0,1)]
     cons = ({'type': 'eq', 'fun': lambda h0: Parallel_Sys_V(h0, GRID_SIZE)-volume_constrt},
             {'type': 'eq', 'fun': lambda h0: h0[boundary_uniq]},
-            {'type': 'ineq', 'fun': lambda h0: h0[h0z_over0_indices] - 0.0002}) # 0.0002 is min height
-    # ,{'type': 'eq', 'fun': lambda h0: h0[contact_line]}
+            {'type': 'ineq', 'fun': lambda h0: h0[h0z_over0_indices] - 0.0002}, # 0.0002 is min height
+            {'type': 'eq', 'fun': lambda h0: h0[contact_line]})
     minimizer_kwargs = {"method":"trust-constr", # SLSQP trust-constr 
                         "constraints":cons, 
                         "args":GRID_SIZE, 
@@ -531,16 +531,16 @@ def main(N, M=0):
     
     h0_opt_points = Compose_Model_XYZ_Points(h0_opt_z, GRID_SIZE)
     
-    
-    method = "trustconstr"
-    h0_file_name = 'FD_OPT_meshgrid_h0'+str(GRID_SIZE)+str(f'-GPU-{method}')
+    test = '-TEST4'
+    method = 'trustconstr' # trustconstr
+    h0_file_name = 'FD_OPT_meshgrid_h0'+str(GRID_SIZE)+str(f'-GPU-{method}{test}')
 
     if os.path.isfile(h0_file_name+'.npy'):
         os.remove(h0_file_name+'.npy')
 
     np.save(h0_file_name, h0_opt_points)
 
-    SAVEFILE = f'RUNFILE-GPU-{method}.txt'
+    SAVEFILE = f'RUNFILE-GPU-{method}{test}.txt'
 
     with open(SAVEFILE, "a") as f:
         f.write("-" * 40 + "\n")
@@ -580,12 +580,20 @@ def main(N, M=0):
     return h0_opt_points, runtime
 
 
+# Run three more experimetns:
+# TEST1: Boundary conditions and middle points off
+# TEST2: With boundary conditions on, mid points off
+# TEST3: Same as 2. but with modified contact line. M = 8
+# TEST4: Same as 3 but with all constraints. M=4
+
 # Call optimizer
 grid_sizes = [10,11,12,13,14,15,16,17,18,19,20,
               21,22,23,24,25,26,27,28,29,30]
 
-for i in grid_sizes:
-    main(i)
+# for i in grid_sizes:
+#     main(i)
+
+main(20, 4)
 
 cuda.close()
 

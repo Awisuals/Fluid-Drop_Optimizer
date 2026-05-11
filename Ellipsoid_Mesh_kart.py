@@ -169,11 +169,11 @@ print("Rest System energy: " + str(system_free_energy(ellipsoid_points_rest[:, 2
 #                 #    title="Triangulated surface representation of a sessile droplet in equilibrium"
 #                    )
 
-
+GRID = 20
 # ellipsoid_points_opt = np.load(f'FD_OPT_meshgrid_h010-CPU-trustconstr.npy')
-h0_opt = np.load(f'FD_OPT_meshgrid_h0{N}-GPU-trustconstr.npy')
+h0_opt = np.load(f'FD_OPT_meshgrid_h0{GRID}-GPU-trustconstr-TEST3.npy')
 # h0_eq = np.load(f'FD_REST_meshgrid_h0{N}.npy')
-h0_inp = np.load(f'FD_NO-REST_meshgrid_h0{N}.npy')
+h0_inp = np.load(f'FD_NO-REST_meshgrid_h0{GRID}.npy')
 
 
 plot_trisurf_faces(data1=h0_inp,
