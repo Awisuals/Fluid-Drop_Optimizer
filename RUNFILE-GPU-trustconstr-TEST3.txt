@@ -1,0 +1,13 @@
+----------------------------------------
+Grid: 20x20
+Method: trustconstr
+Elapsed Optimization time: 482.1006820201874
+
+Non-Rest System volume:   2.6829739468141026e-09
+Optimized System volume:   2.6835144135918006e-09
+Rest System volume:   2.72542977452743e-09
+
+Non-Rest System free energy:  3.671293436686545e-06
+Optimized System free energy:  3.7139696030491392e-06
+Rest System free energy:  3.5761716743322077e-06
+

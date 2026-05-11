@@ -1,0 +1,14 @@
+
+----------------------------------------
+Grid: 20x20
+Method: SLSQP
+Elapsed Optimization time: 26.64860439300537
+
+Non-Rest System volume:   2.6829739468141026e-09
+Optimized System volume:   2.6829739468139926e-09
+Rest System volume:   2.72542977452743e-09
+
+Non-Rest System free energy:  3.671293436686545e-06
+Optimized System free energy:  3.6684653160567475e-06
+Rest System free energy:  3.5761716743322077e-06
+
