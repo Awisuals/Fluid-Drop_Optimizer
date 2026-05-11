@@ -128,7 +128,7 @@ ellipsoid_points_rest = np.stack((x_points, y_points, z_points_rest), 1)
 
 # Create norest ellipsoid
 # Multiply z-values with const 2.56... (based on wrong assumptions but kinda works)
-z_ellipsoid_norest =2.5657562917683223 * ellipsoid_z(x, y, 1.5e+05, # 2.5657562917683223 *   
+z_ellipsoid_norest = ellipsoid_z(x, y, 1.5e+05, # 2.5657562917683223 *   
                           0.000000290055701e+04, 
                           -0.000000250719341e+04) #0.75, 0.75, 0.8)
 
