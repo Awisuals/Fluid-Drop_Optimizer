@@ -296,7 +296,6 @@ def plot_trisurf_faces(data1,
         ax.set_zlabel('z')
         ax.set_title(title)
            
-    
     fig.colorbar(sc, ax=ax, label='z', shrink=0.75)
     
     plt.tight_layout()
@@ -426,3 +425,72 @@ def plot_poly3d_faces(faces, ax=None, alpha=0.5, face_color='#787ecc'):
         plt.show()
         return fig, ax
     return None, ax
+
+
+def plot_multi_series(
+    x,
+    y_series,
+    labels=None,
+    title="",
+    xlabel="",
+    ylabel="",
+    markers=True,
+    lines=True,
+    grid=True,
+    figsize=(7, 5)
+    ):
+    """
+    Plot multiple y-series against a shared x-axis.
+
+    Parameters
+    ----------
+    x : array-like
+        Shared x-axis values.
+    y_series : list of array-like
+        List of y-value arrays.
+    labels : list of str, optional
+        Labels for each series (for legend).
+    title : str, optional
+        Plot title.
+    xlabel : str, optional
+        X-axis label.
+    ylabel : str, optional
+        Y-axis label.
+    markers : bool, optional
+        Whether to show markers.
+    lines : bool, optional
+        Whether to draw lines between points.
+    grid : bool, optional
+        Show grid.
+    figsize : tuple, optional
+        Figure size.
+    """
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    for i, y in enumerate(y_series):
+        label = labels[i] if labels is not None else None
+
+        if lines and markers:
+            ax.plot(x, y, marker='o', label=label)
+        elif lines:
+            ax.plot(x, y, label=label)
+        elif markers:
+            ax.scatter(x, y, label=label)
+
+    ax.semilogy()
+    
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
+    if labels is not None:
+        ax.legend()
+
+    if grid:
+        ax.grid(True, linestyle='--', alpha=0.6)
+
+    plt.tight_layout()
+    plt.show()
+
+    return fig, ax
