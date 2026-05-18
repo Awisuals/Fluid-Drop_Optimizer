@@ -17,11 +17,11 @@ import numpy as np
 # import math
 from matplotlib.ticker import ScalarFormatter
 
-def plot_3d_surface_or_scatter(xy_scale, 
-                               z_scale, 
+def plot_3d_surface_or_scatter(z_scale, 
                                plot_mode, 
                                plot_points,
                                view_param,
+                            #    xy_scale=(),
                                title = "Placeholder", 
                                close=False):
     """
@@ -53,7 +53,7 @@ def plot_3d_surface_or_scatter(xy_scale,
     (fig, ax) : tuple
         The Matplotlib figure and 3D Axes objects, for further customization.
     """
-    fig_minlim_xy, fig_maxlim_xy = xy_scale
+    # fig_minlim_xy, fig_maxlim_xy = xy_scale
     fig_minlim_z, fig_maxlim_z = z_scale
 
     fig = plt.figure()
@@ -76,6 +76,11 @@ def plot_3d_surface_or_scatter(xy_scale,
         vmax=np.max(plot_points[2])
         )
         fig.colorbar(sc, ax=ax, label='z')
+        for axis in [ax.xaxis, ax.yaxis, ax.zaxis]:
+            formatter = ScalarFormatter(useMathText=True)
+            formatter.set_scientific(True)
+            formatter.set_powerlimits((0, 0))  # always use scientific notation
+            axis.set_major_formatter(formatter)
     else:
         raise ValueError("plot_mode must be 0 (surface) or 1 (scatter)")
 
@@ -87,9 +92,9 @@ def plot_3d_surface_or_scatter(xy_scale,
     # ax.set_ylim([fig_minlim_xy, fig_maxlim_xy])
     ax.set_zlim([fig_minlim_z, fig_maxlim_z])
 
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('z')
+    ax.set_xlabel('x, m')
+    ax.set_ylabel('y, m')
+    ax.set_zlabel('z, m')
 
     plt.title(title)
     plt.tight_layout()
@@ -291,9 +296,9 @@ def plot_trisurf_faces(data1,
         ax.set_ylim([ymin, ymax])
         ax.set_zlim([zmin, zmax])
 
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
-        ax.set_zlabel('z')
+        ax.set_xlabel('x, m')
+        ax.set_ylabel('y, m')
+        ax.set_zlabel('z, m')
         ax.set_title(title)
            
     fig.colorbar(sc, ax=ax, label='z', shrink=0.75)

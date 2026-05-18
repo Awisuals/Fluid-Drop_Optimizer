@@ -350,8 +350,6 @@ for i in grid_sizes:
     optimize(i)
 
 
-
-
 # Below are optional experiments, commented out:
 # ----------------------------------------------------
 # Grid_Sizes = [10,11,12,13,14,15,16,17,18,19,20]

@@ -102,7 +102,7 @@ def Cut_Ellipsoid_With_Plane(ellipsoid, plane):
 
 GRID_SCALE=0.0035
 # GRID_SCALE=0.05
-N = 30
+N = 20
 plane_params = [0, 0, 2, 1]
 x = np.linspace(-GRID_SCALE,GRID_SCALE,N)
 y = np.linspace(-GRID_SCALE,GRID_SCALE,N)
@@ -126,7 +126,7 @@ ellipsoid_points_rest = np.stack((x_points, y_points, z_points_rest), 1)
 
 # Create norest ellipsoid
 # Multiply z-values with const 2.56... (based on wrong assumptions but kinda works)
-z_ellipsoid_norest = ellipsoid_z(x, y, 1.5e+05, # 2.5540611332565573 *   
+z_ellipsoid_norest = 2.5540611332565573 * ellipsoid_z(x, y, 1.5e+05, # 2.5540611332565573 *   
                           0.000000290055701e+04, 
                           -0.000000250719341e+04) #0.75, 0.75, 0.8)
 
@@ -153,17 +153,18 @@ print("Rest System volyme: " + str(system_volume(ellipsoid_points_rest[:, 2], N)
 print("No Rest System energy: " + str(system_free_energy(ellipsoid_points_norest[:, 2], N)))
 print("Rest System energy: " + str(system_free_energy(ellipsoid_points_rest[:, 2], N)))
 
-plot_3d_surface_or_scatter([-1,1], 
-                           [0,0.0015], 
+plot_3d_surface_or_scatter([0,0.0015], 
                            1, 
-                           [x,y,z_ellipsoid_norest], 
+                           [x,y,z_ellipsoid_rest], 
                            [25,45,8], 
                            title="Point cloud representation of a sessile droplet")
 
-plot_trisurf_faces(data1=ellipsoid_points_rest,
-                   data2=ellipsoid_points_norest,
+plot_trisurf_faces(data1=ellipsoid_points_norest,
+                   data2=ellipsoid_points_rest,
                    z_scale=[0,0.0015],
-                   view_param=[15,45,8]
+                   view_param=[15,45,8],
+                   title1='Surface representinig modified droplet input',
+                   title2='Surface representing resting droplet for comparison'
                 #    title="Triangulated surface representation of a sessile droplet in equilibrium"
                    )
 
